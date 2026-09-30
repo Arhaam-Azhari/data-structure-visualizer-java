@@ -80,7 +80,8 @@ data-structure-visualizer-java
 ├── .gitignore
 ├── README.md
 └── tests
-    └── VisualizerTest.java
+    ├── VisualizerTest.java
+    └── DesktopWindowTest.java
 ```
 
 ---
@@ -109,10 +110,19 @@ The checks cover stack and queue ordering, linked-list deletion, duplicate tree 
 
 ```sh
 javac -d out src/DataStructureVisualizer.java tests/VisualizerTest.java
-java -Djava.awt.headless=true -cp out VisualizerTest
+java "-Djava.awt.headless=true" -cp out VisualizerTest
 ```
 
 Expected output: `Passed 27 checks.`
+
+To check the full window on a desktop:
+
+```sh
+javac -d out src/DataStructureVisualizer.java tests/DesktopWindowTest.java
+java -cp out DesktopWindowTest
+```
+
+This opens the app, exercises the buttons and tabs, checks scrolling and resizing, and confirms that closing the window ends the process. Screenshots are saved in `desktop-screenshots/`. GitHub Actions runs both sets of checks on Linux and Windows.
 
 ---
 
