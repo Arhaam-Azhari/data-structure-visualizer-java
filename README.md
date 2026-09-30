@@ -64,6 +64,27 @@ Values are arranged by their place in the tree. Duplicate inserts leave the tree
 
 ---
 
+## How it works
+
+Each tab has its own data and operations. Swing button listeners update that data and repaint the drawing. The window starts on Swing's event dispatch thread, which keeps UI updates on the same thread.
+
+| Structure | Implementation | Main operation costs |
+| --- | --- | --- |
+| Stack | `ArrayDeque`, with the newest value drawn first | Push, pop, and peek: amortized O(1) |
+| Queue | Java's `LinkedList` through the `Queue` interface | Enqueue, dequeue, and peek: O(1) |
+| Linked list | Custom nodes with head, tail, and next references | Append: O(1); search and delete by value: O(n) |
+| BST | Custom nodes with recursive insert and search | O(h), where h is the tree height; worst case O(n) |
+
+Linked-list deletion removes the first matching value and reconnects the surrounding nodes. The BST rejects duplicates. Its drawing uses an in-order traversal to give each node a separate horizontal position, with depth controlling the vertical position.
+
+These costs describe the data operations. Redrawing visits the displayed elements, and the BST also recalculates its layout after insertion. The tree is not self-balancing, so sorted input produces a long chain. This tool is intended for small examples that are easy to inspect.
+
+## What this project demonstrates
+
+The same values behave differently in each tab: a stack removes the newest value, a queue removes the oldest, a list follows next references, and a BST chooses a branch by comparing values. Making those changes visible connects the implementation to the behavior.
+
+The project shows Java collections, custom linked structures, recursion, Swing event handling, and drawing. The checks also cover cases that a screenshot cannot show, such as deleting the last list node, rejecting duplicate tree values, and keeping controls usable when a drawing needs scrolling.
+
 ## Tech Stack
 
 - Java
@@ -130,7 +151,7 @@ javac -d out src/DataStructureVisualizer.java tests/DesktopWindowTest.java
 java -cp out DesktopWindowTest
 ```
 
-This opens the app, exercises the buttons and tabs, checks scrolling and resizing, and confirms that closing the window ends the process. Screenshots are saved in `desktop-screenshots/`. GitHub Actions runs both sets of checks on Linux and Windows.
+This opens the app, exercises the buttons and tabs, checks scrolling and resizing, and confirms that closing the window ends the process. Screenshots are saved in `desktop-screenshots/`. GitHub Actions runs both sets of checks on Linux and Windows.\n\n[Passing Windows and Linux run](https://github.com/Arhaam-Azhari/data-structure-visualizer-java/actions/runs/36651174882) — 27 core checks and 26 desktop-window checks on each system. The screenshots above are actual desktop captures.
 
 ---
 
