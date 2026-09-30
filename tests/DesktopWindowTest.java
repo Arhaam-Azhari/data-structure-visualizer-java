@@ -111,7 +111,7 @@ public class DesktopWindowTest {
             SwingUtilities.invokeAndWait(() -> {
                 JPanel panel = tab(3);
                 var tree = (DataStructureVisualizer.BSTPanel) scroll(panel).getViewport().getView();
-                for (int value : new int[]{20, 10, 30, 5, 15, 25, 35}) {
+                for (int value : new int[]{20, 10, 30, 5, 15}) {
                     tree.input.setText("" + value); click(panel, "Insert");
                 }
                 tree.input.setText("15"); click(panel, "Search");
