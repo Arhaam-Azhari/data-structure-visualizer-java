@@ -43,16 +43,24 @@ This project demonstrates how operations on common data structures such as stack
 ## Screenshots
 
 ### Stack
-![Stack](screenshots/Stack.png)
+The newest value appears at the top.
+
+![Stack](screenshots/stack.png)
 
 ### Queue
-![Queue](screenshots/Queue.png)
+Values leave in the order they were added.
+
+![Queue](screenshots/queue.png)
 
 ### Linked List
-![Linked List](screenshots/Linked List.png)
+Deleting a node reconnects its neighbors. Missing values are reported in the status bar.
+
+![Linked List](screenshots/linked-list.png)
 
 ### Binary Search Tree
-![BST](screenshots/BST.png)
+Values are arranged by their place in the tree. Duplicate inserts leave the tree unchanged.
+
+![Binary search tree](screenshots/bst.png)
 
 ---
 
@@ -69,10 +77,10 @@ This project demonstrates how operations on common data structures such as stack
 data-structure-visualizer-java
 │
 ├── screenshots
-│   ├── Stack.png
-│   ├── Queue.png
-│   ├── Linked List.png
-│   └── BST.png
+│   ├── stack.png
+│   ├── queue.png
+│   ├── linked-list.png
+│   └── bst.png
 │
 ├── src
 │   └── DataStructureVisualizer.java
