@@ -12,10 +12,10 @@ public class DataStructureVisualizer extends JFrame {
 
         JTabbedPane tabs = new JTabbedPane();
 
-        tabs.add("Stack", new StackPanel());
-        tabs.add("Queue", new QueuePanel());
-        tabs.add("Linked List", new LinkedListPanel());
-        tabs.add("BST", new BSTPanel());
+        tabs.add("Stack", createTab(new StackPanel()));
+        tabs.add("Queue", createTab(new QueuePanel()));
+        tabs.add("Linked List", createTab(new LinkedListPanel()));
+        tabs.add("BST", createTab(new BSTPanel()));
 
         add(tabs);
     }
@@ -24,6 +24,26 @@ public class DataStructureVisualizer extends JFrame {
         SwingUtilities.invokeLater(() -> {
             new DataStructureVisualizer().setVisible(true);
         });
+    }
+
+    static JPanel createTab(JPanel drawing) {
+        JPanel tab = new JPanel(new BorderLayout());
+        BorderLayout layout = (BorderLayout) drawing.getLayout();
+        Component controls = layout.getLayoutComponent(BorderLayout.NORTH);
+        Component status = layout.getLayoutComponent(BorderLayout.SOUTH);
+        // Keep the buttons and status visible while the drawing scrolls.
+        drawing.remove(controls);
+        drawing.remove(status);
+        tab.add(controls, BorderLayout.NORTH);
+        tab.add(new JScrollPane(drawing), BorderLayout.CENTER);
+        tab.add(status, BorderLayout.SOUTH);
+        return tab;
+    }
+
+    static void resizeDrawing(JPanel panel, int width, int height) {
+        // Scrollbars appear when the drawing needs more room than the window.
+        panel.setPreferredSize(new Dimension(Math.max(950, width), Math.max(600, height)));
+        panel.revalidate();
     }
 
     // STACK PANEL
@@ -36,6 +56,7 @@ public class DataStructureVisualizer extends JFrame {
 
         StackPanel(){
             setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(950, 600));
 
             JPanel controls = new JPanel();
             controls.add(new JLabel("Value"));
@@ -62,11 +83,12 @@ public class DataStructureVisualizer extends JFrame {
 
         void push(){
             try{
-                int val=Integer.parseInt(input.getText());
+                int val=Integer.parseInt(input.getText().trim());
                 stack.push(val);
+                resizeDrawing(this, 950, 150 + stack.size() * 50);
                 status.setText("Pushed "+val);
                 repaint();
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
@@ -77,6 +99,7 @@ public class DataStructureVisualizer extends JFrame {
                 return;
             }
             status.setText("Popped "+stack.pop());
+            resizeDrawing(this, 950, 150 + stack.size() * 50);
             repaint();
         }
 
@@ -90,6 +113,7 @@ public class DataStructureVisualizer extends JFrame {
 
         void reset(){
             stack.clear();
+            resizeDrawing(this, 950, 600);
             status.setText("Stack reset");
             repaint();
         }
@@ -98,13 +122,15 @@ public class DataStructureVisualizer extends JFrame {
             super.paintComponent(g);
 
             int x=getWidth()/2-50;
-            int y=getHeight()-120;
+            int y=90;
+            g.drawString(stack.isEmpty() ? "Stack empty" : "Top", x, 70);
+            // The iterator starts at the top of the stack. Draw that item first.
 
             int i=0;
 
             for(int val:stack){
-                g.drawRect(x,y-i*50,100,40);
-                g.drawString(""+val,x+45,y-i*50+25);
+                g.drawRect(x,y+i*50,120,40);
+                g.drawString(""+val,x+10,y+i*50+25);
                 i++;
             }
         }
@@ -120,6 +146,7 @@ public class DataStructureVisualizer extends JFrame {
 
         QueuePanel(){
             setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(950, 600));
 
             JPanel controls=new JPanel();
 
@@ -147,11 +174,12 @@ public class DataStructureVisualizer extends JFrame {
 
         void enqueue(){
             try{
-                int val=Integer.parseInt(input.getText());
+                int val=Integer.parseInt(input.getText().trim());
                 queue.offer(val);
+                resizeDrawing(this, 160 + queue.size() * 140, 600);
                 status.setText("Enqueued "+val);
                 repaint();
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
@@ -163,6 +191,7 @@ public class DataStructureVisualizer extends JFrame {
             }
 
             status.setText("Dequeued "+queue.poll());
+            resizeDrawing(this, 160 + queue.size() * 140, 600);
             repaint();
         }
 
@@ -177,6 +206,7 @@ public class DataStructureVisualizer extends JFrame {
 
         void reset(){
             queue.clear();
+            resizeDrawing(this, 950, 600);
             status.setText("Queue reset");
             repaint();
         }
@@ -188,9 +218,9 @@ public class DataStructureVisualizer extends JFrame {
             int y=getHeight()/2;
 
             for(int val:queue){
-                g.drawRect(x,y,80,40);
-                g.drawString(""+val,x+35,y+25);
-                x+=100;
+                g.drawRect(x,y,120,40);
+                g.drawString(""+val,x+10,y+25);
+                x+=140;
             }
         }
     }
@@ -199,12 +229,21 @@ public class DataStructureVisualizer extends JFrame {
 
     static class LinkedListPanel extends JPanel {
 
-        java.util.List<Integer> list=new ArrayList<>();
+        static class Node {
+            final int value;
+            Node next;
+            Node(int value) { this.value = value; }
+        }
+
+        Node head;
+        Node tail;
+        int size;
         JTextField input=new JTextField(8);
         JLabel status=new JLabel("Ready");
 
         LinkedListPanel(){
             setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(950, 600));
 
             JPanel controls=new JPanel();
 
@@ -232,40 +271,63 @@ public class DataStructureVisualizer extends JFrame {
 
         void insert(){
             try{
-                int val=Integer.parseInt(input.getText());
-                list.add(val);
+                int val=Integer.parseInt(input.getText().trim());
+                Node node = new Node(val);
+                if (tail == null) head = node;
+                else tail.next = node;
+                tail = node;
+                size++;
+                resizeDrawing(this, 160 + size * 160, 600);
                 status.setText("Inserted "+val);
                 repaint();
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
 
         void delete(){
             try{
-                int val=Integer.parseInt(input.getText());
-                list.remove(Integer.valueOf(val));
+                int val=Integer.parseInt(input.getText().trim());
+                Node previous = null;
+                Node current = head;
+                // Remove the first matching node, keeping any later duplicates.
+                while (current != null && current.value != val) {
+                    previous = current;
+                    current = current.next;
+                }
+                if (current == null) {
+                    status.setText("Not found: " + val);
+                    return;
+                }
+                if (previous == null) head = current.next;
+                else previous.next = current.next;
+                if (current == tail) tail = previous;
+                size--;
+                resizeDrawing(this, 160 + size * 160, 600);
                 status.setText("Deleted "+val);
                 repaint();
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
 
         void search(){
             try{
-                int val=Integer.parseInt(input.getText());
-                if(list.contains(val))
+                int val=Integer.parseInt(input.getText().trim());
+                if(contains(val))
                     status.setText("Found "+val);
                 else
                     status.setText("Not found");
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
 
         void reset(){
-            list.clear();
+            head = null;
+            tail = null;
+            size = 0;
+            resizeDrawing(this, 950, 600);
             status.setText("Reset list");
             repaint();
         }
@@ -276,16 +338,24 @@ public class DataStructureVisualizer extends JFrame {
             int x=60;
             int y=getHeight()/2;
 
-            for(int i=0;i<list.size();i++){
-                g.drawRect(x,y,70,40);
-                g.drawString(""+list.get(i),x+30,y+25);
+            for(Node node = head; node != null; node = node.next){
+                g.drawRect(x,y,120,40);
+                g.drawString(""+node.value,x+10,y+25);
 
-                if(i<list.size()-1){
-                    g.drawLine(x+70,y+20,x+100,y+20);
-                }
+                g.drawLine(x+120,y+20,x+150,y+20);
+                g.drawLine(x+150,y+20,x+143,y+15);
+                g.drawLine(x+150,y+20,x+143,y+25);
 
-                x+=110;
+                x+=160;
             }
+            g.drawString("null", x, y+25);
+        }
+
+        boolean contains(int value) {
+            for (Node node = head; node != null; node = node.next) {
+                if (node.value == value) return true;
+            }
+            return false;
         }
     }
 
@@ -296,10 +366,13 @@ public class DataStructureVisualizer extends JFrame {
         class Node{
             int val;
             Node left,right;
+            int x, y;
             Node(int v){val=v;}
         }
 
         Node root=null;
+        int nodeCount;
+        int deepestLevel;
 
         JTextField input=new JTextField(8);
         JLabel status=new JLabel("Ready");
@@ -307,6 +380,7 @@ public class DataStructureVisualizer extends JFrame {
         BSTPanel(){
 
             setLayout(new BorderLayout());
+            setPreferredSize(new Dimension(950, 600));
 
             JPanel controls=new JPanel();
 
@@ -343,11 +417,19 @@ public class DataStructureVisualizer extends JFrame {
 
         void insert(){
             try{
-                int val=Integer.parseInt(input.getText());
+                int val=Integer.parseInt(input.getText().trim());
+                if (searchRec(root, val)) {
+                    status.setText("Already in tree: " + val);
+                    return;
+                }
                 root=insertRec(root,val);
+                nodeCount++;
+                deepestLevel = 0;
+                positionNodes(root, 0, 0);
+                resizeDrawing(this, 120 + nodeCount * 140, 180 + deepestLevel * 100);
                 status.setText("Inserted "+val);
                 repaint();
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
@@ -366,46 +448,52 @@ public class DataStructureVisualizer extends JFrame {
 
         void search(){
             try{
-                int val=Integer.parseInt(input.getText());
+                int val=Integer.parseInt(input.getText().trim());
 
                 if(searchRec(root,val))
                     status.setText("Found "+val);
                 else
                     status.setText("Not found");
 
-            }catch(Exception e){
+            }catch(NumberFormatException e){
                 status.setText("Invalid input");
             }
         }
 
         void reset(){
             root=null;
+            nodeCount = 0;
+            resizeDrawing(this, 950, 600);
             status.setText("BST reset");
             repaint();
         }
 
-        void drawTree(Graphics g,Node node,int x,int y,int offset){
+        int positionNodes(Node node, int position, int level) {
+            if (node == null) return position;
+            // In-order positions give each node its own horizontal space.
+            position = positionNodes(node.left, position, level + 1);
+            node.x = 60 + position * 140;
+            node.y = 90 + level * 100;
+            deepestLevel = Math.max(deepestLevel, level);
+            return positionNodes(node.right, position + 1, level + 1);
+        }
 
-            if(node==null) return;
-
-            g.drawOval(x,y,40,40);
-            g.drawString(""+node.val,x+15,y+25);
-
-            if(node.left!=null){
-                g.drawLine(x+20,y+40,x-offset+20,y+100);
-                drawTree(g,node.left,x-offset,y+100,offset/2);
-            }
-
-            if(node.right!=null){
-                g.drawLine(x+20,y+40,x+offset+20,y+100);
-                drawTree(g,node.right,x+offset,y+100,offset/2);
-            }
+        void drawTree(Graphics g, Node node) {
+            if (node == null) return;
+            if (node.left != null)
+                g.drawLine(node.x+60,node.y+40,node.left.x+60,node.left.y);
+            if (node.right != null)
+                g.drawLine(node.x+60,node.y+40,node.right.x+60,node.right.y);
+            g.drawOval(node.x,node.y,120,40);
+            g.drawString(""+node.val,node.x+15,node.y+25);
+            drawTree(g,node.left);
+            drawTree(g,node.right);
         }
 
         protected void paintComponent(Graphics g){
             super.paintComponent(g);
 
-            drawTree(g,root,getWidth()/2,60,200);
+            drawTree(g,root);
         }
     }
 }

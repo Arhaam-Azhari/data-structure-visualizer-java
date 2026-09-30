@@ -13,7 +13,7 @@ This project demonstrates how operations on common data structures such as stack
 - Pop elements
 - Peek at the top element
 - Reset the stack
-- Visual representation of LIFO behavior
+- Visual representation of LIFO behavior, with the newest item at the top
 
 ### Queue
 - Enqueue elements
@@ -27,13 +27,16 @@ This project demonstrates how operations on common data structures such as stack
 - Delete elements
 - Search elements
 - Reset the list
-- Visual node connections
+- Singly linked nodes with visible next pointers
+- Reports when a value is not found
 
 ### Binary Search Tree
 - Insert nodes
 - Search nodes
 - Reset the tree
 - Visual hierarchical structure
+- Reports duplicate values without inserting them again
+- Scrollable drawings for larger structures
 
 ---
 
@@ -76,12 +79,15 @@ data-structure-visualizer-java
 │
 ├── .gitignore
 ├── README.md
-└── out
+└── tests
+    └── VisualizerTest.java
 ```
 
 ---
 
 ## How to Run
+
+Install a Java JDK (Java 17 or newer recommended), then run these commands from the project folder. A desktop display is needed to open the application.
 
 Compile the program:
 
@@ -94,6 +100,19 @@ Run the application:
 ```
 java -cp out DataStructureVisualizer
 ```
+
+---
+
+## Checks
+
+The checks cover stack and queue ordering, linked-list deletion, duplicate tree values, invalid input, reset behavior, and offscreen drawing. They can run without a desktop display.
+
+```sh
+javac -d out src/DataStructureVisualizer.java tests/VisualizerTest.java
+java -Djava.awt.headless=true -cp out VisualizerTest
+```
+
+Expected output: `Passed 27 checks.`
 
 ---
 
