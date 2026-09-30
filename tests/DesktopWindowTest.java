@@ -168,9 +168,9 @@ public class DesktopWindowTest {
                 click(panel, "Reset");
                 var tree = (DataStructureVisualizer.BSTPanel) scroll(panel).getViewport().getView();
                 check(tree.root == null, "Tree Reset button");
-                window.setSize(1200, 800);
+                window.setSize(900, 650);
                 window.validate();
-                check(window.getWidth() == 1200 && tabs.isShowing(), "Window resizes and tabs remain visible");
+                check(window.getWidth() == 900 && tabs.isShowing(), "Window resizes and tabs remain visible");
                 check(window.getDefaultCloseOperation() == JFrame.EXIT_ON_CLOSE, "Normal launch exits on close");
                 // Avoid ending the test process while checking the close event.
                 window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
